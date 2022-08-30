@@ -8,6 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import com.gtech.gtechsyst.model.Produto;
+import com.gtech.gtechsyst.model.exception.ResourceNotFoundException;
 
 @Repository
 public class ProdutoRepository {
@@ -53,7 +54,7 @@ public class ProdutoRepository {
 		Optional<Produto> produtoEncontrado = obterPorId(produto.getId());
 		
 		if (produtoEncontrado.isEmpty()) {
-			throw new InputMismatchException("Produto nao encontrado");
+			throw new ResourceNotFoundException("Produto nao encontrado");
 		}
 		
 		//Remover o produto antigo
