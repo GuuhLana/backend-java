@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.gtech.gtechsyst.model.Produto;
-import com.gtech.gtechsyst.repository.ProdutoRepository;
+import com.gtech.gtechsyst.repository.ProdutoRepository_old;
 
 @Service
 public class ProdutoService {
 
 	@Autowired
-	private ProdutoRepository produtoRepository;
+	private ProdutoRepository_old produtoRepository;
 
 	/**
 	 * Método para retornar uma lista de produtos
