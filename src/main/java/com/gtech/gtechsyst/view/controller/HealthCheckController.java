@@ -1,4 +1,4 @@
-package com.gtech.gtechsyst.controller;
+package com.gtech.gtechsyst.view.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
