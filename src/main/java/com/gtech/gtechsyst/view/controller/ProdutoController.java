@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gtech.gtechsyst.model.Produto;
 import com.gtech.gtechsyst.services.ProdutoService;
 import com.gtech.gtechsyst.shared.ProdutoDTO;
+import com.gtech.gtechsyst.view.model.ProdutoRequest;
 import com.gtech.gtechsyst.view.model.ProdutoResponse;
 
 @RestController
@@ -28,50 +29,69 @@ public class ProdutoController {
 
 	@Autowired
 	private ProdutoService produtoService;
-	
+
 	@GetMapping
-	public ResponseEntity<List<ProdutoResponse>> obterTodos(){
+	public ResponseEntity<List<ProdutoResponse>> obterTodos() {
 		List<ProdutoDTO> produtos = produtoService.obterTodos();
-		
-		ModelMapper mapper = new ModelMapper();
-		
+
+		ModelMapper mapeador = new ModelMapper();
+
 		List<ProdutoResponse> resposta = produtos.stream()
-				.map(produtoDto -> mapper.map(produtoDto, ProdutoResponse.class))
+				.map(produtoDto -> mapeador.map(produtoDto, ProdutoResponse.class))
 				.collect(Collectors.toList());
-		
+
 		return new ResponseEntity<>(resposta, HttpStatus.OK);
 	}
-		
+
 	@GetMapping("/{id}")
-	public ResponseEntity<Optional<ProdutoResponse>> obterPorId(@PathVariable Integer id){
+	public ResponseEntity<Optional<ProdutoResponse>> obterPorId(@PathVariable Integer id) {
 //		try {
-			Optional<ProdutoDTO> dto = produtoService.obterPorId(id);
-			
-			ProdutoResponse produto = new ModelMapper().map(dto.get(), ProdutoResponse.class);
-			
-			return new ResponseEntity<>(Optional.of(produto), HttpStatus.OK);
-			
+		Optional<ProdutoDTO> dto = produtoService.obterPorId(id);
+
+		ProdutoResponse produto = new ModelMapper().map(dto.get(), ProdutoResponse.class);
+
+		return new ResponseEntity<>(Optional.of(produto), HttpStatus.OK);
+
 //		} catch (Exception e) {
 //			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 //		}
 	}
-	
+
 	@PostMapping
-	public Produto adicionar(@RequestBody Produto produto) {
-		return produtoService.adicionar(produto);
-	}
-	
-	@DeleteMapping("/{id}")
-	public String deletar(@PathVariable Integer id){
-		produtoService.deletar(id);
-		return "Produto com o ID " + id + " foi deletado com sucesso";
-	}
-	
-	@PutMapping("/{id}")
-	public Produto atualizar(@RequestBody Produto produto, @PathVariable Integer id) {
-		return produtoService.atualizar(id, produto);
+	public ResponseEntity<ProdutoResponse> adicionar(@RequestBody ProdutoRequest produtoReq) {
+		ModelMapper mapeador = new ModelMapper();
 		
+		ProdutoDTO produtoDto = mapeador.map(produtoReq, ProdutoDTO.class);
+
+		produtoDto = produtoService.adicionar(produtoDto);
+
+		return new ResponseEntity<>(
+				mapeador.map(produtoDto, ProdutoResponse.class), 
+				HttpStatus.CREATED
+				);
+
 	}
-	
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deletar(@PathVariable Integer id) {
+		produtoService.deletar(id);
+		
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<ProdutoResponse> atualizar(@RequestBody ProdutoRequest produtoReq, @PathVariable Integer id) {
+		ModelMapper mapeador = new ModelMapper();
+
+		ProdutoDTO produtoDto = mapeador.map(produtoReq, ProdutoDTO.class);
+		
+		produtoDto = produtoService.atualizar(id, produtoDto);
+		
+		return new ResponseEntity<>(
+				mapeador.map(produtoDto, ProdutoResponse.class),
+				HttpStatus.OK
+				);
+
+	}
 
 }
